@@ -1,24 +1,38 @@
 let http = require('http');
+let url = require("url");
 let fs = require("fs");
 
-let server = http.createServer(function(request, response){
-  
-  fs.readFile("index.html", function(err, data){
-    response.writeHead(500, {'Content-Type': 'text/html'});
-    response.write(data);
-    response.end();
-  });
+const PORT = 8080;
 
-
-
-
-})
-
-server.listen(8080);
-// let server = http.createServer(function (req, res){
-//   console.log('Incoming Request');
-//   res.write('Welcome Client');
-//   res.end();
-// });
-// server.listen(PORT);
-// console.log('Server running at http://127.0.0.1:' + PORT + '/');
+function onRequest(request, response) {
+  let path = url.parse(request.url).pathname;
+  if(path === "/about"){
+    fs.readFile("about.html", function(err, data){
+      response.writeHead(200, {'Content-Type': 'text/html'});
+      response.write(data);
+      response.end();
+    });
+  } else if(path === "/contact"){
+    fs.readFile("contact-me.html", function(err, data){
+      response.writeHead(200, {'Content-Type': 'text/html'});
+      response.write(data);
+      response.end();
+    });
+  }
+  else if(path === "/"){
+    fs.readFile("index.html", function(err, data){
+      response.writeHead(200, {'Content-Type': 'text/html'});
+      response.write(data);
+      response.end();
+    });
+  }
+  else {
+    fs.readFile("404.html", function(err, data){
+      response.writeHead(404, {'Content-Type': 'text/html'});
+      response.write(data);
+      response.end();
+    });
+  }
+}
+http.createServer(onRequest).listen(PORT);
+console.log("Server has started on PORT: " + PORT);
